@@ -30,6 +30,9 @@ class Game {
   render() {
     this.context.clearRect(0, 0, this.clientWidth, this.clientHeight);
     
+    this.context.font = '18px sans-serif';
+    this.context.fillText(this.fps, 5, 20);
+
     this.starfield.render();
     this.ship.render();
   }
@@ -37,6 +40,8 @@ class Game {
   update(delta) {
     this.starfield.update(delta);
     this.ship.update(delta);
+
+    this.fps = Math.floor(1000 / delta);
   }
 }
 

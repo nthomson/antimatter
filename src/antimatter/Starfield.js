@@ -5,13 +5,13 @@ class Starfield {
     this.clientHeight = this.context.canvas.clientHeight;
     this.clientWidth = this.context.canvas.clientWidth;
 
-    this.stars = this.generateStars(this.clientWidth, this.clientHeight, 1);
+    this.stars = this.generateStars(this.clientWidth, this.clientHeight, 0.75);
     
-    this.speed = 100; // Pixels per second
+    this.speed = 15; // Pixels per second
   }
 
   generateStars(boundX, boundY, density) {
-    const starDensity = density || 0.5;
+    const starDensity = density || 1;
     const numStars = Math.floor(100 * starDensity);
     const stars = [];
 
