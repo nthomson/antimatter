@@ -1,5 +1,5 @@
-import Ship from './Ship';
-import Starfield from './Starfield';
+import Ship from './objects/Ship';
+import Starfield from './objects/Starfield';
 
 class Game {
   constructor() {
@@ -14,8 +14,20 @@ class Game {
     this.startTime = null;
   }
 
-  run(timestamp) {
-    if(!this.startTime) this.startTime = timestamp;
+  pause() {
+    this.paused = true;
+  }
+
+  resume() {
+    this.paused = false;
+    this.startTime = 0;
+    this.run(0);
+  }
+
+  run(timestamp = 0) {
+    if(!this.startTime) {
+      this.startTime = timestamp;
+    }
 
     const delta = timestamp - this.startTime;
 
@@ -23,13 +35,16 @@ class Game {
     this.render();
 
     this.startTime = timestamp;
-    // start the mainloop
-    requestAnimationFrame(this.run.bind(this));
+    
+    if (!this.paused) {
+      requestAnimationFrame(this.run.bind(this));
+    }
   }
 
   render() {
     this.context.clearRect(0, 0, this.clientWidth, this.clientHeight);
     
+    this.context.fillStyle = 'white';
     this.context.font = '18px sans-serif';
     this.context.fillText(this.fps, 5, 20);
 

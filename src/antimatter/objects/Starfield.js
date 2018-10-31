@@ -1,3 +1,5 @@
+import * as colors from '../lib/colors'
+
 class Starfield {
 
   constructor(context) {
@@ -38,7 +40,7 @@ class Starfield {
     this.stars.forEach(star => {
       this.context.beginPath();
       this.context.arc(star.x, star.y, star.r, 0, 2 * Math.PI, false);
-      this.context.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      this.context.fillStyle = colors.starBright;
       this.context.fill();
     });
     
@@ -49,7 +51,7 @@ class Starfield {
       // Reset star to top of field
       if (star.y > (this.clientHeight + star.r)) {
         star.x = this.rand(0, this.clientWidth);
-        star.y = (star.r * -1);
+        star.y = Math.floor(star.y % this.clientHeight);
       }
       else {
         star.y += ((this.speed * star.r) * delta / 1000);
