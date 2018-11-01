@@ -1,15 +1,17 @@
-import * as colors from '../lib/colors'
+import * as colors from '../lib/colors';
+import * as helpers from '../lib/helpers';
+import config from '../config';
 
 class Starfield {
 
-  constructor(context) {
-    this.context = context;
-    this.clientHeight = this.context.canvas.clientHeight;
-    this.clientWidth = this.context.canvas.clientWidth;
+  constructor(width, height) {
+    this.width = width;
+    this.height = height;
 
-    this.stars = this.generateStars(this.clientWidth, this.clientHeight, 0.75);
+    this.stars = this.generateStars(width, height, 0.75);
     
-    this.speed = 15; // Pixels per second
+    this.warpFactor = 1;
+    this.inWarp = false;
   }
 
   generateStars(boundX, boundY, density) {
@@ -26,36 +28,33 @@ class Starfield {
 
   generateStar(boundX, boundY) {
     return {
-      x: this.rand(0, boundX),
-      y: this.rand(0, boundY),
-      r: this.rand(1, 3)
+      x: helpers.rand(0, boundX),
+      y: helpers.rand(0, boundY),
+      r: helpers.rand(1, 3)
     };
   }
 
-  rand(start, end) {
-    return Math.floor((Math.random() * end) + start);
+  warp() {
+    this.inWarp = !this.inWarp;
   }
 
-  render() {
+  render(context) {
     this.stars.forEach(star => {
-      this.context.beginPath();
-      this.context.arc(star.x, star.y, star.r, 0, 2 * Math.PI, false);
-      this.context.fillStyle = colors.starBright;
-      this.context.fill();
+      context.beginPath();
+      context.arc(star.x, star.y, star.r, 0, 2 * Math.PI, false);
+      context.fillStyle = colors.starBright;
+      context.fill();
     });
     
   }
 
   update(delta) {
+    this.warpFactor = this.inWarp ? Math.min(20, this.warpFactor + (delta / 100)) : 1;
+    
     this.stars.forEach(star => {
       // Reset star to top of field
-      if (star.y > (this.clientHeight + star.r)) {
-        star.x = this.rand(0, this.clientWidth);
-        star.y = Math.floor(star.y % this.clientHeight);
-      }
-      else {
-        star.y += ((this.speed * star.r) * delta / 1000);
-      }
+      star.y += ((config.starSpeed * star.r * this.warpFactor) * delta / 1000);
+      star.y %= this.height;
     });
   }
 }

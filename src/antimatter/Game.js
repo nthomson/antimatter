@@ -9,9 +9,8 @@ class Game {
     this.clientHeight = this.context.canvas.clientHeight;
     this.clientWidth = this.context.canvas.clientWidth;
 
-    this.ship = new Ship(this.context);
-    this.starfield = new Starfield(this.context);
-    this.startTime = null;
+    this.ship = new Ship(this, this.clientWidth/2, this.clientHeight - 75);
+    this.starfield = new Starfield(this.clientHeight, this.clientHeight);
   }
 
   pause() {
@@ -24,6 +23,15 @@ class Game {
     this.run(0);
   }
 
+  warp() {
+    this.starfield.warp();
+    this.ship.warp();
+  }
+
+  flip(antiClockwise) {
+    this.ship.flip(antiClockwise);
+  }
+
   run(timestamp = 0) {
     if(!this.startTime) {
       this.startTime = timestamp;
@@ -32,7 +40,7 @@ class Game {
     const delta = timestamp - this.startTime;
 
     this.update(delta);
-    this.render();
+    this.render(this.context);
 
     this.startTime = timestamp;
     
@@ -41,15 +49,15 @@ class Game {
     }
   }
 
-  render() {
-    this.context.clearRect(0, 0, this.clientWidth, this.clientHeight);
+  render(context) {
+    context.clearRect(0, 0, this.clientWidth, this.clientHeight);
     
-    this.context.fillStyle = 'white';
-    this.context.font = '18px sans-serif';
-    this.context.fillText(this.fps, 5, 20);
+    context.fillStyle = 'white';
+    context.font = '18px sans-serif';
+    context.fillText(this.fps, 5, 20);
 
-    this.starfield.render();
-    this.ship.render();
+    this.starfield.render(context);
+    this.ship.render(context);
   }
   
   update(delta) {

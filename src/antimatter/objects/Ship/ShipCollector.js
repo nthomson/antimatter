@@ -1,83 +1,77 @@
-import ShipCollector from './ShipCollector';
 import * as colors from '../../lib/colors'
+import * as helpers from '../../lib/helpers';
+import config from '../../config';
 
-class Ship {
+class ShipCollector {
 
-  constructor(context, attractorColor, orientation) {
-    this.context = context;
-
-    this.clientHeight = this.context.canvas.clientHeight;
-    this.clientWidth = this.context.canvas.clientWidth;
-
-    this.width = 15;
-    this.height = 50;
-
-    this.x = this.clientWidth/2;
-    this.y = this.clientHeight - (this.height * 1.75);
-    this.orientation = orientation
-
-    this.armLength = 5;
-    this.collectorRadius = 100;
-    this.collectorEdge = this.x + this.width + this.armLength
-    this.collectorOffset = (this.armLength + this.collectorRadius + this.width) * orientation;
-
-    // this.attractorMax = this.collectorOffset + 6;
-    this.attractorMin = this.collectorOffset + (5 * orientation);
-    this.attractorOffset = this.attractorMin;
-
-
-    // this.attractorReverse = 1;
-    // this.attractorSpeed = 8; // Pixels per second
+  constructor(attractorColor, rotation) {
+    this.rotation = rotation || 0;
+    this.attractorJitter = 0;
     this.attractorColor = attractorColor;
-
-    this.arcReverse = orientation < 0;
-    const start1 = Math.PI * 1.9;
-    const end1 = Math.PI * 0.1;
-
-    const start2 = Math.PI * 1.1;
-    const end2 = Math.PI * 0.9;
-
-    this.startAngle = this.arcReverse ? start2 : start1;
-    this.endAngle = this.arcReverse ? end2 : end1; 
   }
 
   update(delta) {
-    const attractorDelta = this.attractorSpeed * delta / 1000;
-    this.attractorReverse *= (this.attractorOffset >= this.attractorMax || this.attractorOffset <= this.attractorMin) ? -1 : 1;
-
-    this.attractorOffset += (attractorDelta * this.attractorReverse) * this.orientation;
+    // Attractor Oscillation
+    this.attractorJitter += (config.attractorSpeed * delta / 1000);
+    this.attractorJitter %= Math.PI * 2;
   }
 
-  render() {
-    const context = this.context;
-    const armLength = this.armLength;
-    const collectorRadius = this.collectorRadius;
-    const collectorOffset = this.collectorOffset;
-    const attractorOffset = this.attractorOffset;
-
+  render(context, fuel) {
     context.strokeStyle = colors.shipGray;
     context.lineWidth = 5;
     
-    // Left Arm
-    context.beginPath();
-    context.moveTo(this.x, this.y);
-    context.lineTo(this.x - ((this.width + armLength) * this.orientation), this.y);
-    context.stroke();
+    const c = this.getCoords(fuel);
 
-    // Left Collector
-    context.beginPath();
-    context.arc(this.x - collectorOffset, this.y, collectorRadius, this.startAngle, this.endAngle, this.arcReverse);
-    context.stroke();
+    // Rotate matrix before drawing
+    helpers.transformMatrix(context, 0, 0, 1, this.rotation);
 
-    context.lineWidth = 2.5;
+    helpers.drawLine(context, c.connector);
+    helpers.drawArc(context, c.collector);
 
-    // Left Attractor
-    context.beginPath();
+    context.lineWidth = 3;
     context.strokeStyle = this.attractorColor;
-    context.arc(this.x - attractorOffset, this.y, collectorRadius, this.startAngle, this.endAngle, this.arcReverse);
-    context.stroke();
+    context.fillStyle = this.attractorColor;
+
+    helpers.drawArc(context, c.attractor);
+    helpers.drawArc(context, c.matter, true);
+
+    // Reset rotation
+    helpers.transformMatrix(context, 0, 0, 1, -this.rotation);
+  }
+
+  getCoords(fuel) {
+    const jitter = (Math.sin(this.attractorJitter) * config.attractorJitterFactor);
+    const fuelJitterFactor = (fuel / config.maxFuel) * 5;
+    return {
+      connector: {
+        startX: 0,
+        startY: 0,
+        endX: config.shipWidth,
+        endY: 0
+      },
+      collector: {
+        x: config.collectorRadius + config.shipWidth,
+        y: 0,
+        r: config.collectorRadius,
+        startAngle: Math.PI * .9,
+        endAngle: Math.PI * 1.1
+      },
+      attractor: {
+        x: config.collectorRadius + config.shipWidth - 10,
+        y: 0,
+        r: config.attractorRadius + jitter,
+        startAngle: Math.PI * .9,
+        endAngle: Math.PI * 1.1
+      },
+      matter: {
+        x: config.shipWidth + fuel + 12 + jitter * fuelJitterFactor,
+        y: Math.abs(jitter * fuelJitterFactor),
+        r: fuel,
+        startAngle: 0,
+        endAngle: 2 * Math.PI
+      }
+    }
   }
 }
 
-export default Ship;
-
+export default ShipCollector;

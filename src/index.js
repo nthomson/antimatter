@@ -3,15 +3,23 @@ import Game from './antimatter/Game';
 let game = new Game();
 game.run();
 
-let pause = document.getElementById('pause');
+const handleKeyDown = (e) => {
+  // e.preventDefault();
 
+  switch(e.code) {
+    case 'ArrowLeft':
+      game.flip(true);
+      break;
+    case 'ArrowRight':
+      game.flip();
+      break;
+    case 'Escape':
+      game.paused ? game.resume() : game.pause();
+      break;
+    case 'Space':
+      game.warp();
+      break;
+  }
+}
 
-// document.addEventListener('visibilitychange', () => document.hidden && game.pause(), false);
-
-const handlePause = () => {
-  game.paused ? game.resume() : game.pause();
-
-  pause.innerHTML = game.paused ? 'Resume' : 'Pause';
-};
-
-pause.addEventListener('click', handlePause, false);
+window.addEventListener('keydown', handleKeyDown, false);
