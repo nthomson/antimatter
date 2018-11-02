@@ -8,10 +8,10 @@ const handleKeyDown = (e) => {
 
   switch(e.code) {
     case 'ArrowLeft':
-      game.flip(true);
+      game.spin(true);
       break;
     case 'ArrowRight':
-      game.flip();
+      game.spin();
       break;
     case 'Escape':
       game.paused ? game.resume() : game.pause();
@@ -22,4 +22,18 @@ const handleKeyDown = (e) => {
   }
 }
 
+const handleKeyUp = (e) => {
+  // e.preventDefault();
+
+  switch(e.code) {
+    case 'ArrowLeft':
+      game.stopSpin();
+      break;
+    case 'ArrowRight':
+      game.stopSpin();
+      break;
+  }
+}
+
 window.addEventListener('keydown', handleKeyDown, false);
+window.addEventListener('keyup', handleKeyUp, false);

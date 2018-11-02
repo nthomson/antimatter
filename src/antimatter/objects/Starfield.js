@@ -52,8 +52,12 @@ class Starfield {
     this.warpFactor = this.inWarp ? Math.min(20, this.warpFactor + (delta / 100)) : 1;
     
     this.stars.forEach(star => {
-      // Reset star to top of field
       star.y += ((config.starSpeed * star.r * this.warpFactor) * delta / 1000);
+
+      if (star.y > this.height) {
+        star.x = helpers.rand(0, this.width);
+      }
+
       star.y %= this.height;
     });
   }

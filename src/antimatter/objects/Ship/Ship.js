@@ -12,23 +12,49 @@ class Ship {
 
     this.rotation = 0; // in radians
 
-    this.redFuel = 55;
-    this.blueFuel = 45;
-
-    this.redArm = new ShipCollector(colors.redMatter, Math.PI);
-    this.blueArm = new ShipCollector(colors.blueMatter);
+    this.redArm = new ShipCollector(this, colors.redMatter, Math.PI);
+    this.blueArm = new ShipCollector(this, colors.blueMatter);
   }
 
   warp() {
     this.inWarp = !this.inWarp;
   }
 
-  flip(antiClockwise) {
-    if (!this.flipping) {
-      this.flipping = true;
+  spin(antiClockwise) {
+    if (!this.spinning) {
+      this.spinning = true;
       this.antiClockwise = antiClockwise;
       this.stopAngle = this.rotation + (Math.PI * (antiClockwise ? -1 : 1));
     }
+  }
+
+  stopSpin() {
+    if (this.spinning) {
+      this.spinning = false;  
+    }
+  }
+
+  offsetCircle(circle, rotation) {
+    const rotationAngle = -(this.rotation + rotation);
+    const coords = helpers.globalCoords(circle, this, rotationAngle);
+    coords.r = circle.r;
+    return coords;
+  }
+
+  blueMatter() {
+    return this.offsetCircle(this.blueArm.matter, this.blueArm.rotation);
+  }
+
+  redMatter() {
+    return this.offsetCircle(this.redArm.matter), this.redArm.rotation; 
+  }
+
+  blueAttractor() {
+    return this.offsetCircle(this.blueArm.attractor, this.blueArm.rotation);
+  }
+
+  redAttractor() {
+    return this.offsetCircle(this.redArm.attractor, this.redArm.rotation);
   }
 
   update(delta) {
@@ -37,7 +63,7 @@ class Ship {
     this.redArm.update(delta);
     this.blueArm.update(delta);
     
-    if (this.flipping) {
+    if (this.spinning) {
       const rotationDelta = (config.shipSpinSpeed * deltaSeconds) * (this.antiClockwise ? -1 : 1);
       this.rotation = this.rotation + rotationDelta
 
@@ -45,16 +71,16 @@ class Ship {
           this.antiClockwise && this.rotation <= this.stopAngle) {
         
         this.rotation = Math.abs(this.stopAngle) % (Math.PI * 2);
-        this.flipping = false;
+        this.spinning = false;
       }
     }
 
     if (this.inWarp) {
       const fuelBurn = deltaSeconds * config.fuelRate;
 
-      if(this.redFuel >= fuelBurn && this.blueFuel >= fuelBurn) {
-        this.redFuel -= fuelBurn;
-        this.blueFuel -= fuelBurn;  
+      if(this.redArm.fuel >= fuelBurn && this.blueArm.fuel >= fuelBurn) {
+        this.redArm.defuel(fuelBurn);
+        this.blueArm.defuel(fuelBurn);
       }
       else {
         this.game.warp();
@@ -71,8 +97,8 @@ class Ship {
     context.fillStyle = colors.shipGray;
     helpers.drawPylon(context, body)
 
-    this.redArm.render(context, this.redFuel);
-    this.blueArm.render(context, this.blueFuel);
+    this.redArm.render(context);
+    this.blueArm.render(context);
     
     // Undo Rotation / Translate
     helpers.setMatrix(context, 0, 0, 1, 0);

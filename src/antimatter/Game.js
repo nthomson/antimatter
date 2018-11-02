@@ -1,5 +1,9 @@
 import Ship from './objects/Ship';
 import Starfield from './objects/Starfield';
+import Level from './objects/Level';
+
+import * as colors from './lib/colors';
+import config from './config';
 
 class Game {
   constructor() {
@@ -11,6 +15,7 @@ class Game {
 
     this.ship = new Ship(this, this.clientWidth/2, this.clientHeight - 75);
     this.starfield = new Starfield(this.clientHeight, this.clientHeight);
+    this.level = new Level();
   }
 
   pause() {
@@ -28,8 +33,12 @@ class Game {
     this.ship.warp();
   }
 
-  flip(antiClockwise) {
-    this.ship.flip(antiClockwise);
+  spin(antiClockwise) {
+    this.ship.spin(antiClockwise);
+  }
+
+  stopSpin() {
+    // this.ship.stopSpin();
   }
 
   run(timestamp = 0) {
@@ -57,12 +66,27 @@ class Game {
     context.fillText(this.fps, 5, 20);
 
     this.starfield.render(context);
+    this.level.render(context);
     this.ship.render(context);
+
+    if (this.paused) {
+      context.fillStyle = colors.overlay;
+      context.rect(0, 0, config.levelWidth, config.levelHeight);
+      context.fill();
+
+      context.fillStyle = 'white';
+      context.font = '26px sans-serif';
+      context.textAlign = 'center';
+      context.fillText('Paused', config.levelWidth/2, config.levelHeight/2)
+    }
   }
   
   update(delta) {
     this.starfield.update(delta);
     this.ship.update(delta);
+    this.level.update(delta);
+
+    this.level.checkCollision(this.ship);
 
     this.fps = Math.floor(1000 / delta);
   }
