@@ -10,11 +10,9 @@ class Game {
     let canvas = document.getElementById('antimatter');
     
     this.context = canvas.getContext('2d');
-    this.clientHeight = this.context.canvas.clientHeight;
-    this.clientWidth = this.context.canvas.clientWidth;
 
-    this.ship = new Ship(this, this.clientWidth/2, this.clientHeight - 75);
-    this.starfield = new Starfield(this.clientHeight, this.clientHeight);
+    this.ship = new Ship(this, config.levelWidth/2, config.levelHeight - 75);
+    this.starfield = new Starfield(config.levelWidth, config.levelHeight);
     this.level = new Level();
   }
 
@@ -59,7 +57,7 @@ class Game {
   }
 
   render(context) {
-    context.clearRect(0, 0, this.clientWidth, this.clientHeight);
+    context.clearRect(0, 0, config.levelWidth, config.levelHeight);
     
     context.fillStyle = 'white';
     context.font = '18px sans-serif';
@@ -75,7 +73,7 @@ class Game {
       context.fill();
 
       context.fillStyle = 'white';
-      context.font = '26px sans-serif';
+      context.font = '26px monospace';
       context.textAlign = 'center';
       context.fillText('Paused', config.levelWidth/2, config.levelHeight/2)
     }

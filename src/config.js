@@ -8,13 +8,16 @@ const config = {
   shipSpinSpeed: Math.PI * 2,
 
   collectorRadius: 90,
+  collectorArcSize: Math.PI * 0.2,
+
   attractorRadius: 50, // Should be <= collector radius
-  attractorOffset: 5, // Be sure to account for jitter factor, below
+  attractorArcSize: Math.PI * 0.3,
+  attractorOffset: 5, // Be sure to account for jitter factor
   attractorJitterFactor: 1,
   attractorSpeed: 25,
 
-  maxFuel: 50, // Try to keep this below attractor radius
-  fuelRate: 7.5,
+  maxFuel: 50, // Keep this below attractor radius
+  fuelRate: 20,
   fuelJitterFactor: 2,
 
   starSpeed: 15

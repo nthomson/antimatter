@@ -127,15 +127,15 @@ class ShipCollector {
         x: config.collectorRadius + config.shipWidth,
         y: 0,
         r: config.collectorRadius,
-        startAngle: Math.PI * .9,
-        endAngle: Math.PI * 1.1
+        startAngle: Math.PI - config.collectorArcSize / 2,
+        endAngle: Math.PI + config.collectorArcSize / 2
       },
       attractor: {
         x: config.collectorRadius + config.shipWidth - (config.collectorRadius - config.attractorRadius - config.attractorOffset),
         y: 0,
         r: config.attractorRadius + jitter,
-        startAngle: Math.PI * .9,
-        endAngle: Math.PI * 1.1
+        startAngle: Math.PI - config.attractorArcSize / 2,
+        endAngle: Math.PI + config.attractorArcSize / 2
       },
       matter: {
         x: config.shipWidth + this.fuel + 12 + jitter * fuelJitter,

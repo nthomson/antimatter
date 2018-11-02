@@ -5,7 +5,7 @@ import config from '../../config';
 class Matter {
 
   constructor(color, x, y, r) {
-    this.speed = 200;
+    this.speed = 300;
     this.x = x;
     this.y = y;
     this.r = r;
@@ -44,7 +44,7 @@ class Matter {
 
   moveTo(point) {
     this.movingToward = point;
-    this.speed = 500;
+    this.speed = 600;
   }
 
   defuel() {

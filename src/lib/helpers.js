@@ -16,6 +16,15 @@ export const drawArc = (context, shape, fill) => {
   fill ? context.fill() : context.stroke();
 };
 
+export const drawCircle = (context, shape, fill) => {
+  const newShape = {
+    x: shape.x,
+    y: shape.y,
+    r: shape.r
+  };
+  drawArc(context, newShape, fill);
+};
+
 export const drawLine = (context, shape) => {
   context.beginPath();
   context.moveTo(shape.startX, shape.startY);
