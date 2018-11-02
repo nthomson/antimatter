@@ -1,3 +1,10 @@
+```
+npm install
+npm run watch
+```
+
+open `dist/index.html`
+
 TODO:
 
 Matter
